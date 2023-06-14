@@ -17,7 +17,6 @@ export class CategoriesService {
   }
 
   findAll(): Promise<Category[]> {
-    // return `This action returns all categories`;
     return this.categoryRepository.find();
   }
 
