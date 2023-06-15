@@ -15,6 +15,7 @@ const mockCategory2 = {
   color: '#00ffff',
   organization: 1,
 };
+const mockCategoryArray = [mockCategory1, mockCategory2];
 
 describe('CategoriesService', () => {
   let service: CategoriesService;
@@ -38,5 +39,12 @@ describe('CategoriesService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('getAll', () => {
+    it('should return an array of categories', async () => {
+      const categories = await service.findAll();
+      expect(categories).toEqual(mockCategoryArray);
+    });
   });
 });
