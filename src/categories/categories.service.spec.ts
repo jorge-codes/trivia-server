@@ -31,6 +31,7 @@ describe('CategoriesService', () => {
           useValue: {
             find: jest.fn().mockResolvedValue([mockCategory1, mockCategory2]),
             findOneOrFail: jest.fn().mockResolvedValue(mockCategory1),
+            save: jest.fn().mockResolvedValue(mockCategory1),
             update: jest.fn().mockResolvedValue(mockCategory2),
           },
         },
@@ -45,7 +46,7 @@ describe('CategoriesService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getAll', () => {
+  describe('findAll', () => {
     it('should return an array of categories', async () => {
       const categories = await service.findAll();
       expect(categories).toEqual(mockCategoryArray);
@@ -57,6 +58,14 @@ describe('CategoriesService', () => {
       const repoSpy = jest.spyOn(repository, 'findOneOrFail');
       expect(service.findOne(1)).resolves.toEqual(mockCategory1);
       expect(repoSpy).toBeCalledWith({ where: { id: 1 } });
+    });
+  });
+
+  describe('create', () => {
+    it('should successfully insert one category', async () => {
+      const category = await service.create(mockCategory1);
+      expect(category).toEqual(mockCategory1);
+      expect(repository.save).toBeCalledTimes(1);
     });
   });
 
