@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CategoriesService } from './categories.service';
 import { Category } from './entities/category.entity';
 
@@ -33,6 +33,7 @@ describe('CategoriesService', () => {
             findOneOrFail: jest.fn().mockResolvedValue(mockCategory1),
             save: jest.fn().mockResolvedValue(mockCategory1),
             update: jest.fn().mockResolvedValue(mockCategory2),
+            delete: jest.fn(),
           },
         },
       ],
@@ -74,6 +75,31 @@ describe('CategoriesService', () => {
       const category = await service.update(1, { name: mockCategory1.name });
       expect(category).toEqual(mockCategory1);
       expect(repository.update).toBeCalledTimes(1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should try to delete one category and fail', async () => {
+      const repoSpy = jest
+        .spyOn(repository, 'delete')
+        .mockRejectedValueOnce(new Error('Bad Delete Method'));
+      expect(service.remove(3)).resolves.toEqual({
+        deleted: false,
+        details: 'Bad Delete Method',
+      });
+      expect(repoSpy).toBeCalledWith({ id: 3 });
+      expect(repoSpy).toBeCalledTimes(1);
+    });
+
+    it('should successfully delete one category', async () => {
+      const repoSpy = jest
+        .spyOn(repository, 'delete')
+        .mockResolvedValue(new DeleteResult());
+      expect(service.remove(1)).resolves.toEqual({
+        deleted: true,
+      });
+      expect(repoSpy).toBeCalledWith({ id: 1 });
+      expect(repoSpy).toBeCalledTimes(1);
     });
   });
 });
