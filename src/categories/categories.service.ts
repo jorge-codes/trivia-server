@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
@@ -34,9 +34,11 @@ export class CategoriesService {
 
   async remove(id: number): Promise<{ deleted: boolean; details?: string }> {
     try {
-      // TODO: find a way to also validate this line in tests with jest
-      // const category = await this.findOne(id);
-      // ******************************************
+      const category = await this.findOne(id);
+      if (!category) {
+        return { deleted: false };
+      }
+
       await this.categoryRepository.delete({ id });
       return { deleted: true };
     } catch (err) {

@@ -79,15 +79,16 @@ describe('CategoriesService', () => {
   });
 
   describe('delete', () => {
+    const failId = 3000;
     it('should try to delete one category and fail', async () => {
       const repoSpy = jest
         .spyOn(repository, 'delete')
         .mockRejectedValueOnce(new Error('Bad Delete Method'));
-      expect(service.remove(3)).resolves.toEqual({
+      await expect(service.remove(failId)).resolves.toEqual({
         deleted: false,
         details: 'Bad Delete Method',
       });
-      expect(repoSpy).toBeCalledWith({ id: 3 });
+      expect(repoSpy).toBeCalledWith({ id: failId });
       expect(repoSpy).toBeCalledTimes(1);
     });
 
@@ -95,7 +96,7 @@ describe('CategoriesService', () => {
       const repoSpy = jest
         .spyOn(repository, 'delete')
         .mockResolvedValue(new DeleteResult());
-      expect(service.remove(1)).resolves.toEqual({
+      await expect(service.remove(1)).resolves.toEqual({
         deleted: true,
       });
       expect(repoSpy).toBeCalledWith({ id: 1 });
